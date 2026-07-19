@@ -1,0 +1,283 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Globe2, X } from "lucide-react";
+import { api } from "../lib/api";
+import { useAuth } from "../lib/auth";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+const registerSchema = z.object({
+  name: z.string().min(2, "Please enter your name"),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginInputs = z.infer<typeof loginSchema>;
+type RegisterInputs = z.infer<typeof registerSchema>;
+
+interface AuthModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function AuthModal({ open, onClose }: AuthModalProps) {
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const loginForm = useForm<LoginInputs>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+  const registerForm = useForm<RegisterInputs>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
+
+  useEffect(() => {
+    if (!open) {
+      loginForm.reset();
+      registerForm.reset();
+      setMode("login");
+    }
+  }, [open, loginForm, registerForm]);
+
+  const onLogin = async (values: LoginInputs) => {
+    try {
+      const response = await api.auth.login(values);
+      const user = response.user;
+      const token = response.token.access_token;
+      login(user, token);
+      toast.success("Signed in successfully");
+      onClose();
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to sign in");
+    }
+  };
+
+  const onRegister = async (values: RegisterInputs) => {
+    try {
+      await api.auth.register(values);
+      toast.success("Account created. You can sign in now.");
+      setMode("login");
+      loginForm.reset({ email: values.email, password: values.password });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to create account",
+      );
+    }
+  };
+
+  const onGoogleSignIn = async () => {
+    try {
+      const response = await api.auth.googleLogin();
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to start Google sign in",
+      );
+    }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (!code) return;
+
+    const finishGoogleAuth = async () => {
+      try {
+        const response = await api.auth.googleCallback(code);
+        login(response.user, response.token.access_token);
+        toast.success("Signed in with Google");
+        onClose();
+        navigate("/dashboard");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Google sign in failed",
+        );
+      }
+    };
+
+    finishGoogleAuth();
+  }, [navigate, onClose, login]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 py-8 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/20 bg-white shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-full border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100"
+        >
+          <X size={18} />
+        </button>
+
+        <div className="grid md:grid-cols-[0.9fr_1.1fr]">
+          <div className="bg-gradient-to-br from-pink-600 via-rose-500 to-orange-400 p-8 text-white">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-100">
+              Welcome back
+            </p>
+            <h2 className="mt-4 text-3xl font-semibold">
+              Design a wedding invitation that feels unforgettable.
+            </h2>
+            <p className="mt-4 text-sm text-pink-50/90">
+              Create, manage, and share your celebration with a calm, polished
+              experience.
+            </p>
+          </div>
+
+          <div className="p-8">
+            <div className="mb-6 flex gap-2 rounded-full border border-slate-200 p-1">
+              <button
+                type="button"
+                onClick={() => setMode("login")}
+                className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === "login" ? "bg-slate-900 text-white" : "text-slate-600"}`}
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("register")}
+                className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === "register" ? "bg-slate-900 text-white" : "text-slate-600"}`}
+              >
+                Create account
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={onGoogleSignIn}
+              className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 font-semibold text-slate-700 transition hover:border-pink-300 hover:bg-pink-50"
+            >
+              <Globe2 size={18} />
+              Continue with Google
+            </button>
+
+            <div className="mb-4 flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-400">
+              <div className="h-px flex-1 bg-slate-200" />
+              <span>or</span>
+              <div className="h-px flex-1 bg-slate-200" />
+            </div>
+
+            {mode === "login" ? (
+              <form
+                onSubmit={loginForm.handleSubmit(onLogin)}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Email
+                  </label>
+                  <input
+                    {...loginForm.register("email")}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                    placeholder="you@example.com"
+                  />
+                  {loginForm.formState.errors.email && (
+                    <p className="mt-1 text-sm text-rose-500">
+                      {loginForm.formState.errors.email.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    {...loginForm.register("password")}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                    placeholder="••••••••"
+                  />
+                  {loginForm.formState.errors.password && (
+                    <p className="mt-1 text-sm text-rose-500">
+                      {loginForm.formState.errors.password.message}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  className="w-full rounded-2xl bg-pink-600 px-4 py-3 font-semibold text-white transition hover:bg-pink-700"
+                >
+                  Sign in
+                </button>
+              </form>
+            ) : (
+              <form
+                onSubmit={registerForm.handleSubmit(onRegister)}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Name
+                  </label>
+                  <input
+                    {...registerForm.register("name")}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                    placeholder="Your name"
+                  />
+                  {registerForm.formState.errors.name && (
+                    <p className="mt-1 text-sm text-rose-500">
+                      {registerForm.formState.errors.name.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Email
+                  </label>
+                  <input
+                    {...registerForm.register("email")}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                    placeholder="you@example.com"
+                  />
+                  {registerForm.formState.errors.email && (
+                    <p className="mt-1 text-sm text-rose-500">
+                      {registerForm.formState.errors.email.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    {...registerForm.register("password")}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3"
+                    placeholder="••••••••"
+                  />
+                  {registerForm.formState.errors.password && (
+                    <p className="mt-1 text-sm text-rose-500">
+                      {registerForm.formState.errors.password.message}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  className="w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-700"
+                >
+                  Create account
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

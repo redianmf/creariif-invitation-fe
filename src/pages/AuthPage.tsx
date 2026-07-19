@@ -1,0 +1,119 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { api } from '../lib/api';
+import { useAuth } from '../lib/auth';
+
+const loginSchema = z.object({
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+const registerSchema = z.object({
+  name: z.string().min(2, 'Please enter your name'),
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+type LoginInputs = z.infer<typeof loginSchema>;
+type RegisterInputs = z.infer<typeof registerSchema>;
+
+export function AuthPage() {
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const loginForm = useForm<LoginInputs>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
+  const registerForm = useForm<RegisterInputs>({ resolver: zodResolver(registerSchema), defaultValues: { name: '', email: '', password: '' } });
+
+  const onLogin = async (values: LoginInputs) => {
+    try {
+      const response = await api.auth.login(values);
+      const user = response.user;
+      const token = response.token.access_token;
+      login(user, token);
+      toast.success('Signed in successfully');
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to sign in');
+    }
+  };
+
+  const onRegister = async (values: RegisterInputs) => {
+    try {
+      await api.auth.register(values);
+      toast.success('Account created. You can sign in now.');
+      setMode('login');
+      loginForm.reset({ email: values.email, password: values.password });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Unable to create account');
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-50 to-slate-100 px-4 py-10">
+      <div className="w-full max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="bg-gradient-to-br from-pink-600 to-rose-500 p-10 text-white">
+            <p className="mb-4 text-sm uppercase tracking-[0.3em] text-pink-100">Creariif Invitation</p>
+            <h1 className="text-4xl font-semibold">Beautiful invitation experiences for every celebration.</h1>
+            <p className="mt-4 max-w-md text-pink-50/90">Create, customize, and share your wedding invitation with a polished digital experience.</p>
+          </div>
+
+          <div className="p-10">
+            <div className="mb-6 flex gap-2 rounded-full border border-slate-200 p-1">
+              <button type="button" onClick={() => setMode('login')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'login' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
+                Sign in
+              </button>
+              <button type="button" onClick={() => setMode('register')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'register' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
+                Create account
+              </button>
+            </div>
+
+            {mode === 'login' ? (
+              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
+                  <input {...loginForm.register('email')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="you@example.com" />
+                  {loginForm.formState.errors.email && <p className="mt-1 text-sm text-rose-500">{loginForm.formState.errors.email.message}</p>}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
+                  <input type="password" {...loginForm.register('password')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="••••••••" />
+                  {loginForm.formState.errors.password && <p className="mt-1 text-sm text-rose-500">{loginForm.formState.errors.password.message}</p>}
+                </div>
+                <button type="submit" className="w-full rounded-2xl bg-pink-600 px-4 py-3 font-semibold text-white transition hover:bg-pink-700">
+                  Sign in
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Name</label>
+                  <input {...registerForm.register('name')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="Your name" />
+                  {registerForm.formState.errors.name && <p className="mt-1 text-sm text-rose-500">{registerForm.formState.errors.name.message}</p>}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Email</label>
+                  <input {...registerForm.register('email')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="you@example.com" />
+                  {registerForm.formState.errors.email && <p className="mt-1 text-sm text-rose-500">{registerForm.formState.errors.email.message}</p>}
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Password</label>
+                  <input type="password" {...registerForm.register('password')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="••••••••" />
+                  {registerForm.formState.errors.password && <p className="mt-1 text-sm text-rose-500">{registerForm.formState.errors.password.message}</p>}
+                </div>
+                <button type="submit" className="w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-700">
+                  Create account
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
