@@ -1,57 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-import { api } from '../lib/api';
-import { useAuth } from '../lib/auth';
-
-const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-const registerSchema = z.object({
-  name: z.string().min(2, 'Please enter your name'),
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type LoginInputs = z.infer<typeof loginSchema>;
-type RegisterInputs = z.infer<typeof registerSchema>;
+import { useAuthService } from './auth.service';
 
 export function AuthPage() {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const navigate = useNavigate();
-  const { login } = useAuth();
-
-  const loginForm = useForm<LoginInputs>({ resolver: zodResolver(loginSchema), defaultValues: { email: '', password: '' } });
-  const registerForm = useForm<RegisterInputs>({ resolver: zodResolver(registerSchema), defaultValues: { name: '', email: '', password: '' } });
-
-  const onLogin = async (values: LoginInputs) => {
-    try {
-      const response = await api.auth.login(values);
-      const user = response.user;
-      const token = response.token.access_token;
-      login(user, token);
-      toast.success('Signed in successfully');
-      navigate('/dashboard');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to sign in');
-    }
-  };
-
-  const onRegister = async (values: RegisterInputs) => {
-    try {
-      await api.auth.register(values);
-      toast.success('Account created. You can sign in now.');
-      setMode('login');
-      loginForm.reset({ email: values.email, password: values.password });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to create account');
-    }
-  };
+  const { mode, changeMode, loginForm, registerForm, onLogin, onRegister } = useAuthService();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-50 to-slate-100 px-4 py-10">
@@ -65,10 +15,10 @@ export function AuthPage() {
 
           <div className="p-10">
             <div className="mb-6 flex gap-2 rounded-full border border-slate-200 p-1">
-              <button type="button" onClick={() => setMode('login')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'login' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
+              <button type="button" onClick={() => changeMode('login')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'login' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
                 Sign in
               </button>
-              <button type="button" onClick={() => setMode('register')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'register' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
+              <button type="button" onClick={() => changeMode('register')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'register' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
                 Create account
               </button>
             </div>

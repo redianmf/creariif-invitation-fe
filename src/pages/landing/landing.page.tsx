@@ -1,53 +1,9 @@
-import { useState } from "react";
 import { ArrowRight, Heart, Sparkles, ShieldCheck, Star } from "lucide-react";
-import { AuthModal } from "../components/AuthModal";
-
-const plans = [
-  {
-    name: "Starter",
-    price: "Free",
-    features: ["1 invitation", "Basic theme", "Guest RSVP"],
-    highlight: false,
-  },
-  {
-    name: "Signature",
-    price: "Rp 199k",
-    features: [
-      "Unlimited invites",
-      "Premium templates",
-      "Custom story section",
-    ],
-    highlight: true,
-  },
-  {
-    name: "Luxury",
-    price: "Rp 499k",
-    features: [
-      "Full design suite",
-      "Priority support",
-      "Advanced personalization",
-    ],
-    highlight: false,
-  },
-];
-
-const highlights = [
-  {
-    title: "Beautiful storytelling",
-    body: "Craft a cinematic introduction with elegant layouts and moving imagery.",
-  },
-  {
-    title: "Real-time RSVP",
-    body: "Let guests respond instantly and keep every celebration feeling personal.",
-  },
-  {
-    title: "Designed for romance",
-    body: "From timeless florals to minimalist luxury, every detail stays graceful.",
-  },
-];
+import { AuthModal } from "../auth/auth-modal.view";
+import { useLandingService } from "./landing.service";
 
 export function LandingPage() {
-  const [authOpen, setAuthOpen] = useState(false);
+  const { authOpen, openAuthModal, closeAuthModal, plans, highlights } = useLandingService();
 
   return (
     <div className="min-h-screen bg-[#fffaf7] text-slate-800">
@@ -83,7 +39,7 @@ export function LandingPage() {
           </nav>
 
           <button
-            onClick={() => setAuthOpen(true)}
+            onClick={openAuthModal}
             className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
           >
             Login
@@ -110,7 +66,7 @@ export function LandingPage() {
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <button
-                  onClick={() => setAuthOpen(true)}
+                  onClick={openAuthModal}
                   className="inline-flex items-center gap-2 rounded-full bg-pink-600 px-5 py-3 font-semibold text-white transition hover:bg-pink-700"
                 >
                   Start free <ArrowRight size={16} />
@@ -249,7 +205,7 @@ export function LandingPage() {
                     ))}
                   </ul>
                   <button
-                    onClick={() => setAuthOpen(true)}
+                    onClick={openAuthModal}
                     className={`mt-8 rounded-full px-4 py-3 font-semibold ${plan.highlight ? "bg-pink-600 text-white hover:bg-pink-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                   >
                     Get started
@@ -286,7 +242,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+      <AuthModal open={authOpen} onClose={closeAuthModal} />
     </div>
   );
 }

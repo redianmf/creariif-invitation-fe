@@ -1,36 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, CalendarDays, Users } from 'lucide-react';
-import { useAuth } from '../lib/auth';
-import { api } from '../lib/api';
-
-interface InvitationSummary {
-  id: string;
-  slug: string;
-  groom_name: string;
-  bride_name: string;
-  is_published: boolean;
-}
+import { useDashboardService } from './dashboard.service';
 
 export function DashboardPage() {
-  const { token } = useAuth();
-  const [invitations, setInvitations] = useState<InvitationSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const response = await api.invitations.list(token);
-        setInvitations(response || []);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, [token]);
+  const { invitations, loading, error } = useDashboardService();
 
   return (
     <div className="space-y-8">
@@ -64,6 +37,8 @@ export function DashboardPage() {
           <div className="mt-6 space-y-3">
             {loading ? (
               <p className="text-sm text-slate-500">Loading invitations…</p>
+            ) : error ? (
+              <p className="text-sm text-rose-600">{error}</p>
             ) : invitations.length === 0 ? (
               <p className="text-sm text-slate-500">No invitations yet. Start from a template to create one.</p>
             ) : (

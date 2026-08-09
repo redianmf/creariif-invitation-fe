@@ -1,26 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { Globe2, X } from "lucide-react";
-import { api } from "../lib/api";
-import { useAuth } from "../lib/auth";
-
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-const registerSchema = z.object({
-  name: z.string().min(2, "Please enter your name"),
-  email: z.string().email("Please enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-type LoginInputs = z.infer<typeof loginSchema>;
-type RegisterInputs = z.infer<typeof registerSchema>;
+import { useAuthService } from "./auth.service";
 
 interface AuthModalProps {
   open: boolean;
@@ -28,91 +7,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ open, onClose }: AuthModalProps) {
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const navigate = useNavigate();
-  const { login } = useAuth();
-
-  const loginForm = useForm<LoginInputs>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
-  });
-  const registerForm = useForm<RegisterInputs>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "" },
-  });
-
-  useEffect(() => {
-    if (!open) {
-      loginForm.reset();
-      registerForm.reset();
-      setMode("login");
-    }
-  }, [open, loginForm, registerForm]);
-
-  const onLogin = async (values: LoginInputs) => {
-    try {
-      const response = await api.auth.login(values);
-      const user = response.user;
-      const token = response.token.access_token;
-      login(user, token);
-      toast.success("Signed in successfully");
-      onClose();
-      navigate("/dashboard");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to sign in");
-    }
-  };
-
-  const onRegister = async (values: RegisterInputs) => {
-    try {
-      await api.auth.register(values);
-      toast.success("Account created. You can sign in now.");
-      setMode("login");
-      loginForm.reset({ email: values.email, password: values.password });
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Unable to create account",
-      );
-    }
-  };
-
-  const onGoogleSignIn = async () => {
-    try {
-      const response = await api.auth.googleLogin();
-      if (response.url) {
-        window.location.href = response.url;
-      }
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Unable to start Google sign in",
-      );
-    }
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-
-    if (!code) return;
-
-    const finishGoogleAuth = async () => {
-      try {
-        const response = await api.auth.googleCallback(code);
-        login(response.user, response.token.access_token);
-        toast.success("Signed in with Google");
-        onClose();
-        navigate("/dashboard");
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Google sign in failed",
-        );
-      }
-    };
-
-    finishGoogleAuth();
-  }, [navigate, onClose, login]);
+  const { mode, changeMode, loginForm, registerForm, onLogin, onRegister, onGoogleSignIn } = useAuthService({ onAuthenticated: onClose });
 
   if (!open) return null;
 
@@ -144,14 +39,14 @@ export function AuthModal({ open, onClose }: AuthModalProps) {
             <div className="mb-6 flex gap-2 rounded-full border border-slate-200 p-1">
               <button
                 type="button"
-                onClick={() => setMode("login")}
+                onClick={() => changeMode("login")}
                 className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === "login" ? "bg-slate-900 text-white" : "text-slate-600"}`}
               >
                 Sign in
               </button>
               <button
                 type="button"
-                onClick={() => setMode("register")}
+                onClick={() => changeMode("register")}
                 className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === "register" ? "bg-slate-900 text-white" : "text-slate-600"}`}
               >
                 Create account

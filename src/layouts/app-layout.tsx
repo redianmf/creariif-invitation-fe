@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, Sparkles, UserCircle2 } from 'lucide-react';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../shared/auth/auth-context';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard' },

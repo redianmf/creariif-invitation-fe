@@ -1,38 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShoppingBag } from 'lucide-react';
-import { api } from '../lib/api';
-import { useAuth } from '../lib/auth';
-
-interface Template {
-  id: string;
-  name: string;
-  description: string;
-  thumbnail: string;
-  price: number;
-  category: string;
-}
+import { useTemplatesService } from './templates.service';
 
 export function TemplatesPage() {
-  const navigate = useNavigate();
-  const { token } = useAuth();
-  const [templates, setTemplates] = useState<Template[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const response = await api.templates.list(token);
-        setTemplates(response || []);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, [token]);
+  const { templates, loading, error, selectTemplate } = useTemplatesService();
 
   return (
     <div className="space-y-8">
@@ -50,6 +20,8 @@ export function TemplatesPage() {
 
       {loading ? (
         <p className="text-sm text-slate-500">Loading templates…</p>
+      ) : error ? (
+        <p className="text-sm text-rose-600">{error}</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {templates.map((template) => (
@@ -66,7 +38,7 @@ export function TemplatesPage() {
                   <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
                     <ShoppingBag size={16} /> Rp {template.price.toLocaleString('id-ID')}
                   </div>
-                  <button onClick={() => navigate('/checkout', { state: { template } })} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pink-700">
+                  <button onClick={() => selectTemplate(template)} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pink-700">
                     Select
                   </button>
                 </div>

@@ -1,13 +1,14 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { Layout } from "./components/Layout";
-import { DashboardPage } from "./pages/DashboardPage";
-import { TemplatesPage } from "./pages/TemplatesPage";
-import { InvitationEditorPage } from "./pages/InvitationEditorPage";
-import { CheckoutPage } from "./pages/CheckoutPage";
-import { PublicInvitationPage } from "./pages/PublicInvitationPage";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AuthProvider, useAuth } from "./lib/auth";
-import { LandingPage } from "./pages/LandingPage";
+import { Layout } from "../layouts/app-layout";
+import { AuthPage } from "../pages/auth/auth.page";
+import { CheckoutPage } from "../pages/checkout/checkout.page";
+import { DashboardPage } from "../pages/dashboard/dashboard.page";
+import { InvitationEditorPage } from "../pages/invitation-editor/invitation-editor.page";
+import { LandingPage } from "../pages/landing/landing.page";
+import { PublicInvitationPage } from "../pages/public-invitation/public-invitation.page";
+import { TemplatesPage } from "../pages/templates/templates.page";
+import { AuthProvider, useAuth } from "../shared/auth/auth-context";
+import { ProtectedRoute } from "./protected-route";
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -24,6 +25,7 @@ function AppRoutes() {
           )
         }
       />
+      <Route path="/auth" element={<AuthPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<DashboardPage />} />

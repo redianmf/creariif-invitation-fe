@@ -1,72 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { api } from '../lib/api';
-
-interface InvitationPublicData {
-  invitation: {
-    slug: string;
-    groom_name: string;
-    bride_name: string;
-    story: string;
-    events: Array<{ title: string; date_time: string; venue_name: string }>;
-    media: Array<{ url: string; type: string }>;
-    template?: { name: string };
-  };
-  guest?: {
-    name: string;
-    slug: string;
-    rsvp_status?: string;
-  };
-}
+import { usePublicInvitationService } from './public-invitation.service';
 
 export function PublicInvitationPage() {
-  const { invitationSlug, guestSlug } = useParams();
-  const [data, setData] = useState<InvitationPublicData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [messageName, setMessageName] = useState('');
-  const [messageText, setMessageText] = useState('');
-
-  useEffect(() => {
-    async function load() {
-      if (!invitationSlug) return;
-      try {
-        const response = await api.public.getInvitation(invitationSlug, guestSlug);
-        setData(response);
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Unable to load invitation');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, [invitationSlug, guestSlug]);
-
-  const submitRsvp = async (status: 'accepted' | 'declined') => {
-    if (!invitationSlug || !guestSlug) return;
-    try {
-      await api.public.submitRsvp(invitationSlug, guestSlug, status);
-      toast.success('RSVP submitted');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to submit RSVP');
-    }
-  };
-
-  const submitMessage = async () => {
-    if (!invitationSlug) return;
-    try {
-      await api.public.submitMessage(invitationSlug, { name: messageName, message: messageText });
-      toast.success('Message sent');
-      setMessageName('');
-      setMessageText('');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to send message');
-    }
-  };
+  const { data, loading, error, messageName, messageText, setMessageName, setMessageText, submitRsvp, submitMessage, guestSlug } = usePublicInvitationService();
 
   if (loading) {
     return <div className="p-8 text-sm text-slate-500">Loading invitation…</div>;
+  }
+
+  if (error) {
+    return <div className="p-8 text-sm text-rose-600">{error}</div>;
   }
 
   if (!data?.invitation) {
@@ -105,8 +47,8 @@ export function PublicInvitationPage() {
             <h2 className="text-xl font-semibold text-slate-900">RSVP</h2>
             {guestSlug ? (
               <div className="mt-4 flex gap-3">
-                <button onClick={() => submitRsvp('accepted')} className="rounded-full bg-emerald-600 px-4 py-2 font-semibold text-white">Accept</button>
-                <button onClick={() => submitRsvp('declined')} className="rounded-full bg-rose-600 px-4 py-2 font-semibold text-white">Decline</button>
+                <button onClick={() => void submitRsvp('accepted')} className="rounded-full bg-emerald-600 px-4 py-2 font-semibold text-white">Accept</button>
+                <button onClick={() => void submitRsvp('declined')} className="rounded-full bg-rose-600 px-4 py-2 font-semibold text-white">Decline</button>
               </div>
             ) : (
               <p className="mt-3 text-sm text-slate-600">Open this page through a guest link to RSVP.</p>
@@ -116,7 +58,7 @@ export function PublicInvitationPage() {
             <div className="mt-4 space-y-3">
               <input value={messageName} onChange={(event) => setMessageName(event.target.value)} placeholder="Your name" className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
               <textarea value={messageText} onChange={(event) => setMessageText(event.target.value)} rows={4} placeholder="Write a message" className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
-              <button onClick={submitMessage} className="rounded-full bg-pink-600 px-4 py-2 font-semibold text-white">Send message</button>
+              <button onClick={() => void submitMessage()} className="rounded-full bg-pink-600 px-4 py-2 font-semibold text-white">Send message</button>
             </div>
           </div>
         </div>

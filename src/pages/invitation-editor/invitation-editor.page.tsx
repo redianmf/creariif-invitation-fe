@@ -1,71 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
-import { api } from '../lib/api';
-import { useAuth } from '../lib/auth';
-
-interface InvitationDetail {
-  id: string;
-  slug: string;
-  groom_name: string;
-  bride_name: string;
-  story: string;
-  is_published: boolean;
-  events: Array<{ title: string; date_time: string; venue_name: string }>;
-  media: Array<{ url: string; type: string }>;
-}
+import { useInvitationEditorService } from './invitation-editor.service';
 
 export function InvitationEditorPage() {
-  const { id } = useParams();
-  const { token } = useAuth();
-  const [invitation, setInvitation] = useState<InvitationDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [groomName, setGroomName] = useState('');
-  const [brideName, setBrideName] = useState('');
-  const [story, setStory] = useState('');
-
-  useEffect(() => {
-    async function load() {
-      if (!id) return;
-      try {
-        const response = await api.invitations.get(id, token);
-        setInvitation(response);
-        setGroomName(response.groom_name || '');
-        setBrideName(response.bride_name || '');
-        setStory(response.story || '');
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Unable to load invitation');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    load();
-  }, [id, token]);
-
-  const save = async () => {
-    if (!id) return;
-    try {
-      await api.invitations.update(id, { groom_name: groomName, bride_name: brideName, story }, token);
-      toast.success('Invitation updated');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to save invitation');
-    }
-  };
-
-  const publish = async () => {
-    if (!id) return;
-    try {
-      await api.invitations.publish(id, token);
-      toast.success('Invitation published');
-      setInvitation((prev) => prev ? { ...prev, is_published: true } : prev);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to publish invitation');
-    }
-  };
+  const { invitation, loading, error, groomName, brideName, story, updateField, save, publish, publicLink } = useInvitationEditorService();
 
   if (loading) {
     return <p className="text-sm text-slate-500">Loading invitation…</p>;
+  }
+
+  if (error) {
+    return <p className="text-sm text-rose-600">{error}</p>;
   }
 
   return (
@@ -90,19 +33,19 @@ export function InvitationEditorPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
                 Groom name
-                <input value={groomName} onChange={(event) => setGroomName(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
+                <input value={groomName} onChange={(event) => updateField('groomName', event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
               </label>
               <label className="block text-sm font-medium text-slate-700">
                 Bride name
-                <input value={brideName} onChange={(event) => setBrideName(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
+                <input value={brideName} onChange={(event) => updateField('brideName', event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
               </label>
             </div>
             <label className="block text-sm font-medium text-slate-700">
               Story
-              <textarea value={story} onChange={(event) => setStory(event.target.value)} rows={6} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
+              <textarea value={story} onChange={(event) => updateField('story', event.target.value)} rows={6} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
             </label>
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
-              Public link: /p/{invitation?.slug || 'your-link'}
+              Public link: {publicLink}
             </div>
           </div>
         </div>
