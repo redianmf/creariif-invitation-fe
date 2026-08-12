@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '../../shared/api/api';
 import { useAuth } from '../../shared/auth/auth-context';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface InvitationDetail {
   id: string;
@@ -18,6 +19,7 @@ export interface InvitationDetail {
 export function useInvitationEditorService() {
   const { id } = useParams();
   const { token } = useAuth();
+  const { t } = useI18n();
   const [invitation, setInvitation] = useState<InvitationDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,12 +43,13 @@ export function useInvitationEditorService() {
       setBrideName(response.bride_name || '');
       setStory(response.story || '');
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Unable to load invitation');
-      toast.error(error instanceof Error ? error.message : 'Unable to load invitation');
+      const message = error instanceof Error ? error.message : t('editor.loadError');
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
-  }, [id, token]);
+  }, [id, t, token]);
 
   useEffect(() => {
     void loadInvitation();
@@ -73,11 +76,11 @@ export function useInvitationEditorService() {
 
     try {
       await api.invitations.update(id, { groom_name: groomName, bride_name: brideName, story }, token);
-      toast.success('Invitation updated');
+      toast.success(t('editor.updated'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to save invitation');
+      toast.error(error instanceof Error ? error.message : t('editor.saveError'));
     }
-  }, [brideName, groomName, id, story, token]);
+  }, [brideName, groomName, id, story, t, token]);
 
   const publish = useCallback(async () => {
     if (!id) {
@@ -86,12 +89,12 @@ export function useInvitationEditorService() {
 
     try {
       await api.invitations.publish(id, token);
-      toast.success('Invitation published');
+      toast.success(t('editor.published'));
       setInvitation((prev) => (prev ? { ...prev, is_published: true } : prev));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to publish invitation');
+      toast.error(error instanceof Error ? error.message : t('editor.publishError'));
     }
-  }, [id, token]);
+  }, [id, t, token]);
 
   return {
     invitation,

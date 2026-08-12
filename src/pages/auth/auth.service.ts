@@ -6,20 +6,16 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { api } from '../../shared/api/api';
 import { useAuth } from '../../shared/auth/auth-context';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
-const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
+interface LoginInputs {
+  email: string;
+  password: string;
+}
 
-const registerSchema = z.object({
-  name: z.string().min(2, 'Please enter your name'),
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
-
-type LoginInputs = z.infer<typeof loginSchema>;
-type RegisterInputs = z.infer<typeof registerSchema>;
+interface RegisterInputs extends LoginInputs {
+  name: string;
+}
 
 interface AuthServiceOptions {
   onAuthenticated?: () => void;
@@ -29,6 +25,16 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useI18n();
+  const loginSchema = z.object({
+    email: z.string().email(t('validation.email')),
+    password: z.string().min(6, t('validation.password')),
+  });
+  const registerSchema = z.object({
+    name: z.string().min(2, t('validation.name')),
+    email: z.string().email(t('validation.email')),
+    password: z.string().min(6, t('validation.password')),
+  });
 
   const loginForm = useForm<LoginInputs>({
     resolver: zodResolver(loginSchema),
@@ -47,28 +53,28 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
         const user = response.user;
         const token = response.token.access_token;
         login(user, token);
-        toast.success('Signed in successfully');
+        toast.success(t('toast.signInSuccess'));
         onAuthenticated?.();
         navigate('/dashboard');
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Unable to sign in');
+        toast.error(error instanceof Error ? error.message : t('toast.signInError'));
       }
     },
-    [login, navigate],
+    [login, navigate, onAuthenticated, t],
   );
 
   const onRegister = useCallback(
     async (values: RegisterInputs) => {
       try {
         await api.auth.register(values);
-        toast.success('Account created. You can sign in now.');
+        toast.success(t('toast.accountCreated'));
         setMode('login');
         loginForm.reset({ email: values.email, password: values.password });
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Unable to create account');
+        toast.error(error instanceof Error ? error.message : t('toast.accountError'));
       }
     },
-    [loginForm],
+    [loginForm, t],
   );
 
   const changeMode = useCallback((nextMode: 'login' | 'register') => {
@@ -82,9 +88,9 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
         window.location.assign(response.url);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to start Google sign in');
+      toast.error(error instanceof Error ? error.message : t('toast.googleStartError'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const code = new URLSearchParams(window.location.search).get('code');
@@ -95,16 +101,16 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
       try {
         const response = await api.auth.googleCallback(authorizationCode);
         login(response.user, response.token.access_token);
-        toast.success('Signed in with Google');
+        toast.success(t('toast.googleSuccess'));
         onAuthenticated?.();
         navigate('/dashboard');
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Google sign in failed');
+        toast.error(error instanceof Error ? error.message : t('toast.googleError'));
       }
     }
 
     void finishGoogleAuth();
-  }, [login, navigate, onAuthenticated]);
+  }, [login, navigate, onAuthenticated, t]);
 
   return {
     mode,

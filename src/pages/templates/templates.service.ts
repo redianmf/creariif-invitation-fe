@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../shared/api/api';
 import { useAuth } from '../../shared/auth/auth-context';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface Template {
   id: string;
@@ -15,6 +16,7 @@ export interface Template {
 export function useTemplatesService() {
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { t } = useI18n();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +35,7 @@ export function useTemplatesService() {
         }
       } catch (error) {
         if (active) {
-          setError(error instanceof Error ? error.message : 'Unable to load templates');
+          setError(error instanceof Error ? error.message : t('error.loadTemplates'));
         }
       } finally {
         if (active) {
@@ -47,7 +49,7 @@ export function useTemplatesService() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [t, token]);
 
   const selectTemplate = useCallback(
     (template: Template) => {

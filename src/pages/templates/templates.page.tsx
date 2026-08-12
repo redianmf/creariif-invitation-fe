@@ -1,8 +1,10 @@
 import { Sparkles, ShoppingBag } from 'lucide-react';
 import { useTemplatesService } from './templates.service';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export function TemplatesPage() {
   const { templates, loading, error, selectTemplate } = useTemplatesService();
+  const { t } = useI18n();
 
   return (
     <div className="space-y-8">
@@ -12,14 +14,14 @@ export function TemplatesPage() {
             <Sparkles size={20} />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Choose a template</h1>
-            <p className="text-sm text-slate-500">Select a layout for your invitation and continue to checkout.</p>
+            <h1 className="text-2xl font-semibold text-slate-900">{t('templates.title')}</h1>
+            <p className="text-sm text-slate-500">{t('templates.description')}</p>
           </div>
         </div>
       </div>
 
       {loading ? (
-        <p className="text-sm text-slate-500">Loading templates…</p>
+        <p className="text-sm text-slate-500">{t('templates.loading')}</p>
       ) : error ? (
         <p className="text-sm text-rose-600">{error}</p>
       ) : (
@@ -39,7 +41,7 @@ export function TemplatesPage() {
                     <ShoppingBag size={16} /> Rp {template.price.toLocaleString('id-ID')}
                   </div>
                   <button onClick={() => selectTemplate(template)} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pink-700">
-                    Select
+                    {t('templates.select')}
                   </button>
                 </div>
               </div>

@@ -1,9 +1,12 @@
 import { ArrowRight, Heart, Sparkles, ShieldCheck, Star } from "lucide-react";
 import { AuthModal } from "../auth/auth-modal.view";
 import { useLandingService } from "./landing.service";
+import { LanguageSelector } from "../../shared/i18n/language-selector";
+import { useI18n } from "../../shared/i18n/i18n-context";
 
 export function LandingPage() {
   const { authOpen, openAuthModal, closeAuthModal, plans, highlights } = useLandingService();
+  const { t } = useI18n();
 
   return (
     <div className="min-h-screen bg-[#fffaf7] text-slate-800">
@@ -18,32 +21,35 @@ export function LandingPage() {
                 Creariif Invitation
               </p>
               <p className="text-xs text-slate-500">
-                Love stories, beautifully shared
+                {t('landing.tagline')}
               </p>
             </div>
           </div>
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
             <a href="#about" className="transition hover:text-pink-600">
-              About us
+              {t('nav.about')}
             </a>
             <a href="#demo" className="transition hover:text-pink-600">
-              Demo
+              {t('nav.demo')}
             </a>
             <a href="#pricing" className="transition hover:text-pink-600">
-              Pricing
+              {t('nav.pricing')}
             </a>
             <a href="#contact" className="transition hover:text-pink-600">
-              Contact us
+              {t('nav.contact')}
             </a>
           </nav>
 
-          <button
-            onClick={openAuthModal}
-            className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
-          >
-            Login
-          </button>
+          <div className="flex items-center gap-3">
+            <LanguageSelector />
+            <button
+              onClick={openAuthModal}
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+            >
+              {t('auth.login')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -53,29 +59,26 @@ export function LandingPage() {
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="max-w-2xl">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-pink-200 bg-white/80 px-3 py-1 text-sm font-medium text-pink-700 shadow-sm">
-                <Sparkles size={16} /> New • Romantic digital invitations for
-                modern weddings
+                <Sparkles size={16} /> {t('landing.badge')}
               </div>
               <h1 className="text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-                Let your love story unfold with a breathtaking invitation
-                experience.
+                {t('landing.title')}
               </h1>
               <p className="mt-6 text-lg leading-8 text-slate-600">
-                Curate elegant timelines, heartfelt messages, and timeless
-                designs that make every guest feel part of the celebration.
+                {t('landing.description')}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <button
                   onClick={openAuthModal}
                   className="inline-flex items-center gap-2 rounded-full bg-pink-600 px-5 py-3 font-semibold text-white transition hover:bg-pink-700"
                 >
-                  Start free <ArrowRight size={16} />
+                  {t('landing.startFree')} <ArrowRight size={16} />
                 </button>
                 <a
                   href="#demo"
                   className="rounded-full border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-pink-300 hover:text-pink-600"
                 >
-                  View demo
+                  {t('landing.viewDemo')}
                 </a>
               </div>
             </div>
@@ -85,7 +88,7 @@ export function LandingPage() {
               <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white p-4 shadow-[0_25px_80px_rgba(15,23,42,0.12)]">
                 <img
                   src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80"
-                  alt="Wedding invitation inspiration"
+                  alt={t('landing.imageAlt')}
                   className="h-[460px] w-full rounded-[1.5rem] object-cover"
                 />
               </div>
@@ -97,10 +100,10 @@ export function LandingPage() {
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-500">
-                Why couples love it
+                {t('landing.why')}
               </p>
               <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-                A modern invitation, crafted for intimacy and elegance.
+                {t('landing.whyTitle')}
               </h2>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
@@ -129,15 +132,13 @@ export function LandingPage() {
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-300">
-                  Interactive demo
+                  {t('landing.demoEyebrow')}
                 </p>
                 <h2 className="mt-3 text-3xl font-semibold">
-                  See how your invitation can feel cinematic and effortless.
+                  {t('landing.demoTitle')}
                 </h2>
                 <p className="mt-4 text-lg text-slate-300">
-                  Merge your story, event timeline, photos, and guest flow into
-                  one shared experience that feels premium from the first
-                  glance.
+                  {t('landing.demoDescription')}
                 </p>
               </div>
               <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 backdrop-blur">
@@ -146,21 +147,21 @@ export function LandingPage() {
                     <ShieldCheck size={18} />
                   </div>
                   <div>
-                    <p className="font-semibold">Live preview</p>
+                    <p className="font-semibold">{t('landing.livePreview')}</p>
                     <p className="text-sm text-slate-300">
-                      Responsive, polished and ready to share.
+                      {t('landing.livePreviewDescription')}
                     </p>
                   </div>
                 </div>
                 <div className="mt-6 space-y-3 text-sm text-slate-300">
                   <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-3">
-                    • Storytelling sections with elegant spacing
+                    • {t('landing.demoFeature1')}
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-3">
-                    • RSVP and guest message experiences
+                    • {t('landing.demoFeature2')}
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-3">
-                    • Mobile-first layouts that feel fluid
+                    • {t('landing.demoFeature3')}
                   </div>
                 </div>
               </div>
@@ -172,10 +173,10 @@ export function LandingPage() {
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-500">
-                Pricing
+                {t('nav.pricing')}
               </p>
               <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-                Choose a plan crafted for every kind of celebration.
+                {t('landing.pricingTitle')}
               </h2>
             </div>
             <div className="mt-10 grid gap-6 lg:grid-cols-3">
@@ -191,9 +192,9 @@ export function LandingPage() {
                     <span className="text-4xl font-semibold text-slate-900">
                       {plan.price}
                     </span>
-                    {plan.price !== "Free" && (
+                    {plan.price !== t('plan.free') && (
                       <span className="mb-1 text-sm text-slate-500">
-                        / month
+                        {t('landing.perMonth')}
                       </span>
                     )}
                   </div>
@@ -208,7 +209,7 @@ export function LandingPage() {
                     onClick={openAuthModal}
                     className={`mt-8 rounded-full px-4 py-3 font-semibold ${plan.highlight ? "bg-pink-600 text-white hover:bg-pink-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                   >
-                    Get started
+                    {t('landing.getStarted')}
                   </button>
                 </div>
               ))}
@@ -221,14 +222,13 @@ export function LandingPage() {
             <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-500">
-                  Contact us
+                  {t('nav.contact')}
                 </p>
                 <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-                  Need a custom invitation experience?
+                  {t('landing.contactTitle')}
                 </h2>
                 <p className="mt-3 max-w-2xl text-slate-600">
-                  We’d love to help you build something heartfelt, elegant, and
-                  unforgettable for your wedding day.
+                  {t('landing.contactDescription')}
                 </p>
               </div>
               <a

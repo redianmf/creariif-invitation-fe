@@ -1,17 +1,19 @@
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { LogOut, Sparkles, UserCircle2 } from 'lucide-react';
 import { useAuth } from '../shared/auth/auth-context';
-
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/templates', label: 'Templates' },
-  { to: '/checkout', label: 'Checkout' },
-];
+import { LanguageSelector } from '../shared/i18n/language-selector';
+import { useI18n } from '../shared/i18n/i18n-context';
 
 export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useI18n();
+  const navItems = [
+    { to: '/dashboard', label: t('nav.dashboard') },
+    { to: '/templates', label: t('nav.templates') },
+    { to: '/checkout', label: t('nav.checkout') },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -23,7 +25,7 @@ export function Layout() {
             </div>
             <div>
               <p className="font-semibold text-slate-900">Creariif Invitation</p>
-              <p className="text-sm text-slate-500">Wedding invitations made simple</p>
+              <p className="text-sm text-slate-500">{t('brand.tagline')}</p>
             </div>
           </div>
 
@@ -40,9 +42,10 @@ export function Layout() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <LanguageSelector />
             <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
               <UserCircle2 size={16} />
-              {user?.name || 'Guest'}
+              {user?.name || t('dashboard.guest')}
             </div>
             <button
               onClick={() => {

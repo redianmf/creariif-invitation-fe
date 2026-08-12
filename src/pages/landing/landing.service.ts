@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface LandingPlan {
   name: string;
@@ -14,6 +15,7 @@ export interface LandingHighlight {
 
 export function useLandingService() {
   const [authOpen, setAuthOpen] = useState(false);
+  const { t } = useI18n();
 
   const openAuthModal = useCallback(() => {
     setAuthOpen(true);
@@ -25,37 +27,37 @@ export function useLandingService() {
 
   const plans: LandingPlan[] = [
     {
-      name: 'Starter',
-      price: 'Free',
-      features: ['1 invitation', 'Basic theme', 'Guest RSVP'],
+      name: t('plan.starter'),
+      price: t('plan.free'),
+      features: [t('plan.feature1'), t('plan.feature2'), t('plan.feature3')],
       highlight: false,
     },
     {
-      name: 'Signature',
+      name: t('plan.signature'),
       price: 'Rp 199k',
-      features: ['Unlimited invites', 'Premium templates', 'Custom story section'],
+      features: [t('plan.feature4'), t('plan.feature5'), t('plan.feature6')],
       highlight: true,
     },
     {
-      name: 'Luxury',
+      name: t('plan.luxury'),
       price: 'Rp 499k',
-      features: ['Full design suite', 'Priority support', 'Advanced personalization'],
+      features: [t('plan.feature7'), t('plan.feature8'), t('plan.feature9')],
       highlight: false,
     },
   ];
 
   const highlights: LandingHighlight[] = [
     {
-      title: 'Beautiful storytelling',
-      body: 'Craft a cinematic introduction with elegant layouts and moving imagery.',
+      title: t('highlight.story.title'),
+      body: t('highlight.story.body'),
     },
     {
-      title: 'Real-time RSVP',
-      body: 'Let guests respond instantly and keep every celebration feeling personal.',
+      title: t('highlight.rsvp.title'),
+      body: t('highlight.rsvp.body'),
     },
     {
-      title: 'Designed for romance',
-      body: 'From timeless florals to minimalist luxury, every detail stays graceful.',
+      title: t('highlight.romance.title'),
+      body: t('highlight.romance.body'),
     },
   ];
 

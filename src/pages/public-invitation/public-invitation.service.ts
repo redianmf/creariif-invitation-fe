@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '../../shared/api/api';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface PublicInvitationData {
   invitation: {
@@ -22,6 +23,7 @@ export interface PublicInvitationData {
 
 export function usePublicInvitationService() {
   const { invitationSlug, guestSlug } = useParams();
+  const { t } = useI18n();
   const [data, setData] = useState<PublicInvitationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +49,7 @@ export function usePublicInvitationService() {
         }
       } catch (error) {
         if (active) {
-          const message = error instanceof Error ? error.message : 'Unable to load invitation';
+          const message = error instanceof Error ? error.message : t('editor.loadError');
           setError(message);
           toast.error(message);
         }
@@ -63,7 +65,7 @@ export function usePublicInvitationService() {
     return () => {
       active = false;
     };
-  }, [guestSlug, invitationSlug]);
+  }, [guestSlug, invitationSlug, t]);
 
   const submitRsvp = useCallback(
     async (status: 'accepted' | 'declined') => {
@@ -73,12 +75,12 @@ export function usePublicInvitationService() {
 
       try {
         await api.public.submitRsvp(invitationSlug, guestSlug, status);
-        toast.success('RSVP submitted');
+        toast.success(t('public.rsvpSuccess'));
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Unable to submit RSVP');
+        toast.error(error instanceof Error ? error.message : t('public.rsvpError'));
       }
     },
-    [guestSlug, invitationSlug],
+    [guestSlug, invitationSlug, t],
   );
 
   const submitMessage = useCallback(async () => {
@@ -88,13 +90,13 @@ export function usePublicInvitationService() {
 
     try {
       await api.public.submitMessage(invitationSlug, { name: messageName, message: messageText });
-      toast.success('Message sent');
+      toast.success(t('public.messageSuccess'));
       setMessageName('');
       setMessageText('');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Unable to send message');
+      toast.error(error instanceof Error ? error.message : t('public.messageError'));
     }
-  }, [invitationSlug, messageName, messageText]);
+  }, [invitationSlug, messageName, messageText, t]);
 
   return {
     data,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../shared/api/api';
 import { useAuth } from '../../shared/auth/auth-context';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface InvitationSummary {
   id: string;
@@ -12,6 +13,7 @@ export interface InvitationSummary {
 
 export function useDashboardService() {
   const { token } = useAuth();
+  const { t } = useI18n();
   const [invitations, setInvitations] = useState<InvitationSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function useDashboardService() {
         }
       } catch (error) {
         if (active) {
-          setError(error instanceof Error ? error.message : 'Unable to load invitations');
+          setError(error instanceof Error ? error.message : t('error.loadInvitations'));
         }
       } finally {
         if (active) {
@@ -44,7 +46,7 @@ export function useDashboardService() {
     return () => {
       active = false;
     };
-  }, [token]);
+  }, [t, token]);
 
   return {
     invitations,

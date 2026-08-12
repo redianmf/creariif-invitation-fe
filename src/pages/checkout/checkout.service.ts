@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '../../shared/api/api';
 import { useAuth } from '../../shared/auth/auth-context';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface CheckoutTemplate {
   id: string;
@@ -14,14 +15,15 @@ export function useCheckoutService() {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useAuth();
+  const { t } = useI18n();
   const selectedTemplate = (location.state as { template?: CheckoutTemplate } | null)?.template;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleCheckout = useCallback(async () => {
     if (!selectedTemplate) {
-      setError('Please choose a template first');
-      toast.error('Please choose a template first');
+      setError(t('checkout.selectFirst'));
+      toast.error(t('checkout.selectFirst'));
       navigate('/templates');
       return;
     }
@@ -30,16 +32,16 @@ export function useCheckoutService() {
       setLoading(true);
       setError(null);
       await api.orders.checkout({ template_id: selectedTemplate.id }, token);
-      toast.success('Checkout initialized successfully');
+      toast.success(t('checkout.success'));
       navigate('/dashboard');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Checkout failed';
+      const message = error instanceof Error ? error.message : t('checkout.error');
       setError(message);
       toast.error(message);
     } finally {
       setLoading(false);
     }
-  }, [navigate, selectedTemplate, token]);
+  }, [navigate, selectedTemplate, t, token]);
 
   return {
     selectedTemplate,

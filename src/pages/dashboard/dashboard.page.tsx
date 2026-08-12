@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, CalendarDays, Users } from 'lucide-react';
 import { useDashboardService } from './dashboard.service';
+import { useI18n } from '../../shared/i18n/i18n-context';
 
 export function DashboardPage() {
   const { invitations, loading, error } = useDashboardService();
+  const { t } = useI18n();
 
   return (
     <div className="space-y-8">
@@ -11,13 +13,13 @@ export function DashboardPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="mb-2 inline-flex items-center gap-2 rounded-full bg-pink-100 px-3 py-1 text-sm font-medium text-pink-700">
-              <Sparkles size={16} /> Welcome back
+              <Sparkles size={16} /> {t('dashboard.welcome')}
             </p>
-            <h1 className="text-3xl font-semibold text-slate-900">Manage your invitation experience</h1>
-            <p className="mt-3 max-w-2xl text-slate-600">Create a polished digital invite, review your guests, and publish the final link for your celebration.</p>
+            <h1 className="text-3xl font-semibold text-slate-900">{t('dashboard.title')}</h1>
+            <p className="mt-3 max-w-2xl text-slate-600">{t('dashboard.description')}</p>
           </div>
           <Link to="/templates" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 font-medium text-white transition hover:bg-slate-700">
-            Browse templates <ArrowRight size={16} />
+            {t('dashboard.browseTemplates')} <ArrowRight size={16} />
           </Link>
         </div>
       </section>
@@ -29,27 +31,27 @@ export function DashboardPage() {
               <CalendarDays size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Your invitations</h2>
-              <p className="text-sm text-slate-500">Track the invitations you are curating</p>
+              <h2 className="text-xl font-semibold text-slate-900">{t('dashboard.invitations')}</h2>
+              <p className="text-sm text-slate-500">{t('dashboard.invitationsDescription')}</p>
             </div>
           </div>
 
           <div className="mt-6 space-y-3">
             {loading ? (
-              <p className="text-sm text-slate-500">Loading invitations…</p>
+              <p className="text-sm text-slate-500">{t('dashboard.loading')}</p>
             ) : error ? (
               <p className="text-sm text-rose-600">{error}</p>
             ) : invitations.length === 0 ? (
-              <p className="text-sm text-slate-500">No invitations yet. Start from a template to create one.</p>
+              <p className="text-sm text-slate-500">{t('dashboard.empty')}</p>
             ) : (
               invitations.map((invitation) => (
                 <Link key={invitation.id} to={`/invitations/${invitation.id}`} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition hover:border-pink-300 hover:bg-pink-50">
                   <div>
-                    <p className="font-medium text-slate-900">{invitation.groom_name || 'Unnamed'} & {invitation.bride_name || 'Guest'}</p>
+                    <p className="font-medium text-slate-900">{invitation.groom_name || t('dashboard.unnamed')} & {invitation.bride_name || t('dashboard.guest')}</p>
                     <p className="text-sm text-slate-500">/{invitation.slug}</p>
                   </div>
                   <span className={`rounded-full px-3 py-1 text-xs font-medium ${invitation.is_published ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                    {invitation.is_published ? 'Published' : 'Draft'}
+                    {invitation.is_published ? t('dashboard.published') : t('dashboard.draft')}
                   </span>
                 </Link>
               ))
@@ -63,15 +65,15 @@ export function DashboardPage() {
               <Users size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Next steps</h2>
-              <p className="text-sm text-slate-500">Guide your guests from discovery to RSVP</p>
+              <h2 className="text-xl font-semibold text-slate-900">{t('dashboard.nextSteps')}</h2>
+              <p className="text-sm text-slate-500">{t('dashboard.nextStepsDescription')}</p>
             </div>
           </div>
 
           <ul className="mt-6 space-y-3 text-sm text-slate-600">
-            <li>• Pick a template that matches your style.</li>
-            <li>• Add couple stories, events, and photo galleries.</li>
-            <li>• Share the public link and collect messages and RSVPs.</li>
+            <li>• {t('dashboard.step1')}</li>
+            <li>• {t('dashboard.step2')}</li>
+            <li>• {t('dashboard.step3')}</li>
           </ul>
         </div>
       </section>
