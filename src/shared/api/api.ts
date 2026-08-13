@@ -1,3 +1,5 @@
+import type { LoginResponse } from "../auth/auth.types";
+
 const API_BASE_URL =
   (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
     ?.VITE_API_URL || "http://localhost:8080/api/v1";
@@ -75,7 +77,7 @@ async function request<T>(
 export const api = {
   auth: {
     login: (payload: { email: string; password: string }) =>
-      request<{ user: any; token: any }>("/auth/login", {
+      request<LoginResponse>("/auth/login", {
         method: "POST",
         body: JSON.stringify(payload),
       }),
@@ -89,7 +91,7 @@ export const api = {
         method: "GET",
       }),
     googleCallback: (code: string) =>
-      request<{ user: any; token: any }>(
+      request<LoginResponse>(
         `/auth/google/callback?code=${encodeURIComponent(code)}`,
         {
           method: "POST",

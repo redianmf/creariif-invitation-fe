@@ -1,5 +1,8 @@
 import { usePublicInvitationService } from './public-invitation.service';
 import { useI18n } from '../../shared/i18n/i18n-context';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export function PublicInvitationPage() {
   const { data, loading, error, messageName, messageText, setMessageName, setMessageText, submitRsvp, submitMessage, guestSlug } = usePublicInvitationService();
@@ -49,8 +52,8 @@ export function PublicInvitationPage() {
             <h2 className="text-xl font-semibold text-slate-900">{t('public.rsvp')}</h2>
             {guestSlug ? (
               <div className="mt-4 flex gap-3">
-                <button onClick={() => void submitRsvp('accepted')} className="rounded-full bg-emerald-600 px-4 py-2 font-semibold text-white">{t('public.accept')}</button>
-                <button onClick={() => void submitRsvp('declined')} className="rounded-full bg-rose-600 px-4 py-2 font-semibold text-white">{t('public.decline')}</button>
+                <Button onClick={() => void submitRsvp('accepted')} className="rounded-full bg-emerald-600 px-4 py-2 font-semibold text-white hover:bg-emerald-700">{t('public.accept')}</Button>
+                <Button onClick={() => void submitRsvp('declined')} className="rounded-full bg-rose-600 px-4 py-2 font-semibold text-white hover:bg-rose-700">{t('public.decline')}</Button>
               </div>
             ) : (
               <p className="mt-3 text-sm text-slate-600">{t('public.rsvpHint')}</p>
@@ -58,9 +61,9 @@ export function PublicInvitationPage() {
 
             <h3 className="mt-8 text-lg font-semibold text-slate-900">{t('public.leaveMessage')}</h3>
             <div className="mt-4 space-y-3">
-              <input value={messageName} onChange={(event) => setMessageName(event.target.value)} placeholder={t('public.yourName')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
-              <textarea value={messageText} onChange={(event) => setMessageText(event.target.value)} rows={4} placeholder={t('public.writeMessage')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
-              <button onClick={() => void submitMessage()} className="rounded-full bg-pink-600 px-4 py-2 font-semibold text-white">{t('public.sendMessage')}</button>
+              <Input value={messageName} onChange={(event) => setMessageName(event.target.value)} placeholder={t('public.yourName')} className="h-auto rounded-2xl border-slate-200 px-4 py-3" />
+              <Textarea value={messageText} onChange={(event) => setMessageText(event.target.value)} rows={4} placeholder={t('public.writeMessage')} className="min-h-0 rounded-2xl border-slate-200 px-4 py-3" />
+              <Button onClick={() => void submitMessage()} className="rounded-full bg-pink-600 px-4 py-2 font-semibold text-white hover:bg-pink-700">{t('public.sendMessage')}</Button>
             </div>
           </div>
         </div>

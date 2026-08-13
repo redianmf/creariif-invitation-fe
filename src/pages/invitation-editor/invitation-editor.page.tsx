@@ -1,5 +1,8 @@
 import { useInvitationEditorService } from './invitation-editor.service';
 import { useI18n } from '../../shared/i18n/i18n-context';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export function InvitationEditorPage() {
   const { invitation, loading, error, groomName, brideName, story, updateField, save, publish, publicLink } = useInvitationEditorService();
@@ -22,8 +25,8 @@ export function InvitationEditorPage() {
             <p className="mt-2 text-sm text-slate-600">{t('editor.description')}</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={save} className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">{t('editor.save')}</button>
-            <button onClick={publish} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pink-700">{t('editor.publish')}</button>
+            <Button onClick={save} className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700">{t('editor.save')}</Button>
+            <Button onClick={publish} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-700">{t('editor.publish')}</Button>
           </div>
         </div>
       </div>
@@ -35,16 +38,16 @@ export function InvitationEditorPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block text-sm font-medium text-slate-700">
                 {t('editor.groom')}
-                <input value={groomName} onChange={(event) => updateField('groomName', event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
+                <Input value={groomName} onChange={(event) => updateField('groomName', event.target.value)} className="mt-2 h-auto rounded-2xl border-slate-200 px-4 py-3" />
               </label>
               <label className="block text-sm font-medium text-slate-700">
                 {t('editor.bride')}
-                <input value={brideName} onChange={(event) => updateField('brideName', event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
+                <Input value={brideName} onChange={(event) => updateField('brideName', event.target.value)} className="mt-2 h-auto rounded-2xl border-slate-200 px-4 py-3" />
               </label>
             </div>
             <label className="block text-sm font-medium text-slate-700">
               {t('editor.story')}
-              <textarea value={story} onChange={(event) => updateField('story', event.target.value)} rows={6} className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3" />
+              <Textarea value={story} onChange={(event) => updateField('story', event.target.value)} rows={6} className="mt-2 min-h-0 rounded-2xl border-slate-200 px-4 py-3" />
             </label>
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
               {t('editor.publicLink', { link: publicLink })}

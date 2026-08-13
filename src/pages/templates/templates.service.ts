@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../shared/api/api';
-import { useAuth } from '../../shared/auth/auth-context';
+import { selectAuthToken, useAuthStore } from '../../shared/auth/auth-store';
 import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface Template {
@@ -15,7 +15,7 @@ export interface Template {
 
 export function useTemplatesService() {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const token = useAuthStore(selectAuthToken);
   const { t } = useI18n();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);

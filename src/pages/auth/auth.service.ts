@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { api } from '../../shared/api/api';
-import { useAuth } from '../../shared/auth/auth-context';
+import { useAuthStore } from '../../shared/auth/auth-store';
 import { useI18n } from '../../shared/i18n/i18n-context';
 
 interface LoginInputs {
@@ -24,7 +24,7 @@ interface AuthServiceOptions {
 export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const setLoginResponse = useAuthStore((state) => state.setLoginResponse);
   const { t } = useI18n();
   const loginSchema = z.object({
     email: z.string().email(t('validation.email')),
@@ -50,9 +50,7 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
     async (values: LoginInputs) => {
       try {
         const response = await api.auth.login(values);
-        const user = response.user;
-        const token = response.token.access_token;
-        login(user, token);
+        setLoginResponse(response);
         toast.success(t('toast.signInSuccess'));
         onAuthenticated?.();
         navigate('/dashboard');
@@ -60,7 +58,7 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
         toast.error(error instanceof Error ? error.message : t('toast.signInError'));
       }
     },
-    [login, navigate, onAuthenticated, t],
+    [navigate, onAuthenticated, setLoginResponse, t],
   );
 
   const onRegister = useCallback(
@@ -100,7 +98,7 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
     async function finishGoogleAuth() {
       try {
         const response = await api.auth.googleCallback(authorizationCode);
-        login(response.user, response.token.access_token);
+        setLoginResponse(response);
         toast.success(t('toast.googleSuccess'));
         onAuthenticated?.();
         navigate('/dashboard');
@@ -110,7 +108,7 @@ export function useAuthService({ onAuthenticated }: AuthServiceOptions = {}) {
     }
 
     void finishGoogleAuth();
-  }, [login, navigate, onAuthenticated, t]);
+  }, [navigate, onAuthenticated, setLoginResponse, t]);
 
   return {
     mode,

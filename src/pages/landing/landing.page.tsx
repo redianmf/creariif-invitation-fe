@@ -3,10 +3,14 @@ import { AuthModal } from "../auth/auth-modal.view";
 import { useLandingService } from "./landing.service";
 import { LanguageSelector } from "../../shared/i18n/language-selector";
 import { useI18n } from "../../shared/i18n/i18n-context";
+import { Button } from "@/components/ui/button";
+import { UserMenu } from "../../components/user-menu";
+import { selectIsAuthenticated, useAuthStore } from "../../shared/auth/auth-store";
 
 export function LandingPage() {
   const { authOpen, openAuthModal, closeAuthModal, plans, highlights } = useLandingService();
   const { t } = useI18n();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
   return (
     <div className="min-h-screen bg-[#fffaf7] text-slate-800">
@@ -43,12 +47,16 @@ export function LandingPage() {
 
           <div className="flex items-center gap-3">
             <LanguageSelector />
-            <button
-              onClick={openAuthModal}
-              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
-            >
-              {t('auth.login')}
-            </button>
+            {isAuthenticated ? (
+              <UserMenu />
+            ) : (
+              <Button
+                onClick={openAuthModal}
+                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+              >
+                {t('auth.login')}
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -68,12 +76,12 @@ export function LandingPage() {
                 {t('landing.description')}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <button
+                <Button
                   onClick={openAuthModal}
-                  className="inline-flex items-center gap-2 rounded-full bg-pink-600 px-5 py-3 font-semibold text-white transition hover:bg-pink-700"
+                  className="h-auto rounded-full bg-pink-600 px-5 py-3 font-semibold text-white hover:bg-pink-700"
                 >
                   {t('landing.startFree')} <ArrowRight size={16} />
-                </button>
+                </Button>
                 <a
                   href="#demo"
                   className="rounded-full border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-pink-300 hover:text-pink-600"
@@ -205,12 +213,12 @@ export function LandingPage() {
                       </li>
                     ))}
                   </ul>
-                  <button
+                  <Button
                     onClick={openAuthModal}
-                    className={`mt-8 rounded-full px-4 py-3 font-semibold ${plan.highlight ? "bg-pink-600 text-white hover:bg-pink-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
+                    className={`mt-8 h-auto rounded-full px-4 py-3 font-semibold ${plan.highlight ? "bg-pink-600 text-white hover:bg-pink-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
                   >
                     {t('landing.getStarted')}
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>

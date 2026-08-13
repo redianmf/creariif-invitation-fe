@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../shared/api/api';
-import { useAuth } from '../../shared/auth/auth-context';
+import { selectAuthToken, useAuthStore } from '../../shared/auth/auth-store';
 import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface InvitationSummary {
@@ -12,7 +12,7 @@ export interface InvitationSummary {
 }
 
 export function useDashboardService() {
-  const { token } = useAuth();
+  const token = useAuthStore(selectAuthToken);
   const { t } = useI18n();
   const [invitations, setInvitations] = useState<InvitationSummary[]>([]);
   const [loading, setLoading] = useState(true);

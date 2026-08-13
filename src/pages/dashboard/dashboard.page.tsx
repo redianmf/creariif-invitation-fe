@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight, CalendarDays, Users } from 'lucide-react';
 import { useDashboardService } from './dashboard.service';
 import { useI18n } from '../../shared/i18n/i18n-context';
+import { Button } from '@/components/ui/button';
 
 export function DashboardPage() {
   const { invitations, loading, error } = useDashboardService();
@@ -18,9 +19,9 @@ export function DashboardPage() {
             <h1 className="text-3xl font-semibold text-slate-900">{t('dashboard.title')}</h1>
             <p className="mt-3 max-w-2xl text-slate-600">{t('dashboard.description')}</p>
           </div>
-          <Link to="/templates" className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 font-medium text-white transition hover:bg-slate-700">
-            {t('dashboard.browseTemplates')} <ArrowRight size={16} />
-          </Link>
+          <Button asChild className="rounded-full bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700">
+            <Link to="/templates">{t('dashboard.browseTemplates')} <ArrowRight size={16} /></Link>
+          </Button>
         </div>
       </section>
 

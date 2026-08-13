@@ -1,6 +1,8 @@
 import { Sparkles, ShoppingBag } from 'lucide-react';
 import { useTemplatesService } from './templates.service';
 import { useI18n } from '../../shared/i18n/i18n-context';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export function TemplatesPage() {
   const { templates, loading, error, selectTemplate } = useTemplatesService();
@@ -27,7 +29,7 @@ export function TemplatesPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {templates.map((template) => (
-            <div key={template.id} className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+            <Card key={template.id} className="overflow-hidden rounded-3xl border border-slate-200 bg-white py-0 shadow-sm">
               <div className="h-40 bg-gradient-to-br from-pink-100 via-rose-50 to-slate-100 p-6">
                 <div className="h-full rounded-2xl border border-white/70 bg-white/70 p-4">
                   <p className="text-sm font-semibold text-slate-700">{template.category}</p>
@@ -40,12 +42,12 @@ export function TemplatesPage() {
                   <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
                     <ShoppingBag size={16} /> Rp {template.price.toLocaleString('id-ID')}
                   </div>
-                  <button onClick={() => selectTemplate(template)} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-pink-700">
+                  <Button onClick={() => selectTemplate(template)} className="rounded-full bg-pink-600 px-4 py-2 text-sm font-semibold text-white hover:bg-pink-700">
                     {t('templates.select')}
-                  </button>
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}

@@ -1,5 +1,7 @@
 import { useAuthService } from './auth.service';
 import { useI18n } from '../../shared/i18n/i18n-context';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export function AuthPage() {
   const { mode, changeMode, loginForm, registerForm, onLogin, onRegister } = useAuthService();
@@ -17,50 +19,50 @@ export function AuthPage() {
 
           <div className="p-10">
             <div className="mb-6 flex gap-2 rounded-full border border-slate-200 p-1">
-              <button type="button" onClick={() => changeMode('login')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'login' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
+              <Button type="button" variant={mode === 'login' ? 'default' : 'ghost'} onClick={() => changeMode('login')} className={`h-auto flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'login' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
                 {t('auth.signIn')}
-              </button>
-              <button type="button" onClick={() => changeMode('register')} className={`flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'register' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
+              </Button>
+              <Button type="button" variant={mode === 'register' ? 'default' : 'ghost'} onClick={() => changeMode('register')} className={`h-auto flex-1 rounded-full px-4 py-2 text-sm font-medium ${mode === 'register' ? 'bg-slate-900 text-white' : 'text-slate-600'}`}>
                 {t('auth.createAccount')}
-              </button>
+              </Button>
             </div>
 
             {mode === 'login' ? (
               <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t('auth.email')}</label>
-                  <input {...loginForm.register('email')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="you@example.com" />
+                  <Input {...loginForm.register('email')} className="h-auto rounded-2xl border-slate-200 px-4 py-3" placeholder="you@example.com" />
                   {loginForm.formState.errors.email && <p className="mt-1 text-sm text-rose-500">{loginForm.formState.errors.email.message}</p>}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t('auth.password')}</label>
-                  <input type="password" {...loginForm.register('password')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="••••••••" />
+                  <Input type="password" {...loginForm.register('password')} className="h-auto rounded-2xl border-slate-200 px-4 py-3" placeholder="••••••••" />
                   {loginForm.formState.errors.password && <p className="mt-1 text-sm text-rose-500">{loginForm.formState.errors.password.message}</p>}
                 </div>
-                <button type="submit" className="w-full rounded-2xl bg-pink-600 px-4 py-3 font-semibold text-white transition hover:bg-pink-700">
+                <Button type="submit" className="h-auto w-full rounded-2xl bg-pink-600 px-4 py-3 font-semibold text-white hover:bg-pink-700">
                   {t('auth.signIn')}
-                </button>
+                </Button>
               </form>
             ) : (
               <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t('auth.name')}</label>
-                  <input {...registerForm.register('name')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder={t('auth.yourName')} />
+                  <Input {...registerForm.register('name')} className="h-auto rounded-2xl border-slate-200 px-4 py-3" placeholder={t('auth.yourName')} />
                   {registerForm.formState.errors.name && <p className="mt-1 text-sm text-rose-500">{registerForm.formState.errors.name.message}</p>}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t('auth.email')}</label>
-                  <input {...registerForm.register('email')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="you@example.com" />
+                  <Input {...registerForm.register('email')} className="h-auto rounded-2xl border-slate-200 px-4 py-3" placeholder="you@example.com" />
                   {registerForm.formState.errors.email && <p className="mt-1 text-sm text-rose-500">{registerForm.formState.errors.email.message}</p>}
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">{t('auth.password')}</label>
-                  <input type="password" {...registerForm.register('password')} className="w-full rounded-2xl border border-slate-200 px-4 py-3" placeholder="••••••••" />
+                  <Input type="password" {...registerForm.register('password')} className="h-auto rounded-2xl border-slate-200 px-4 py-3" placeholder="••••••••" />
                   {registerForm.formState.errors.password && <p className="mt-1 text-sm text-rose-500">{registerForm.formState.errors.password.message}</p>}
                 </div>
-                <button type="submit" className="w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-700">
+                <Button type="submit" className="h-auto w-full rounded-2xl bg-slate-900 px-4 py-3 font-semibold text-white hover:bg-slate-700">
                   {t('auth.createAccount')}
-                </button>
+                </Button>
               </form>
             )}
           </div>

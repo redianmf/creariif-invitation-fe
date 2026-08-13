@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { api } from '../../shared/api/api';
-import { useAuth } from '../../shared/auth/auth-context';
+import { selectAuthToken, useAuthStore } from '../../shared/auth/auth-store';
 import { useI18n } from '../../shared/i18n/i18n-context';
 
 export interface CheckoutTemplate {
@@ -14,7 +14,7 @@ export interface CheckoutTemplate {
 export function useCheckoutService() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { token } = useAuth();
+  const token = useAuthStore(selectAuthToken);
   const { t } = useI18n();
   const selectedTemplate = (location.state as { template?: CheckoutTemplate } | null)?.template;
   const [loading, setLoading] = useState(false);

@@ -6,12 +6,13 @@ import { DashboardPage } from "../pages/dashboard/dashboard.page";
 import { InvitationEditorPage } from "../pages/invitation-editor/invitation-editor.page";
 import { LandingPage } from "../pages/landing/landing.page";
 import { PublicInvitationPage } from "../pages/public-invitation/public-invitation.page";
+import { ProfilePage } from "../pages/profile/profile.page";
 import { TemplatesPage } from "../pages/templates/templates.page";
-import { AuthProvider, useAuth } from "../shared/auth/auth-context";
+import { selectIsAuthenticated, useAuthStore } from "../shared/auth/auth-store";
 import { ProtectedRoute } from "./protected-route";
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
   return (
     <Routes>
@@ -32,6 +33,7 @@ function AppRoutes() {
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/invitations/:id" element={<InvitationEditorPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>
       <Route path="/p/:invitationSlug" element={<PublicInvitationPage />} />
@@ -44,9 +46,5 @@ function AppRoutes() {
 }
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
-  );
+  return <AppRoutes />;
 }
