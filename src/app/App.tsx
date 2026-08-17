@@ -5,12 +5,12 @@ import { CheckoutPage } from "../pages/checkout/checkout.page";
 import { DashboardPage } from "../pages/dashboard/dashboard.page";
 import { InvitationEditorPage } from "../pages/invitation-editor/invitation-editor.page";
 import { LandingPage } from "../pages/landing/landing.page";
+import { OAuthCallbackPage } from "../pages/auth/oauth-callback.page";
 import { PublicInvitationPage } from "../pages/public-invitation/public-invitation.page";
 import { ProfilePage } from "../pages/profile/profile.page";
 import { TemplatesPage } from "../pages/templates/templates.page";
 import { selectIsAuthenticated, useAuthStore } from "../shared/auth/auth-store";
 import { ProtectedRoute } from "./protected-route";
-
 function AppRoutes() {
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
@@ -27,6 +27,7 @@ function AppRoutes() {
         }
       />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/auth/google/callback" element={<OAuthCallbackPage />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<DashboardPage />} />

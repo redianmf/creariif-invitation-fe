@@ -1,4 +1,5 @@
 import type { LoginResponse } from "../auth/auth.types";
+import { API_ENDPOINTS } from "./endpoints";
 
 const API_BASE_URL =
   (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
@@ -77,22 +78,22 @@ async function request<T>(
 export const api = {
   auth: {
     login: (payload: { email: string; password: string }) =>
-      request<LoginResponse>("/auth/login", {
+      request<LoginResponse>(API_ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
         body: JSON.stringify(payload),
       }),
     register: (payload: { name: string; email: string; password: string }) =>
-      request<any>("/auth/register", {
+      request<any>(API_ENDPOINTS.AUTH.REGISTER, {
         method: "POST",
         body: JSON.stringify(payload),
       }),
     googleLogin: () =>
-      request<{ url: string }>("/auth/google/login", {
+      request<{ url: string }>(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, {
         method: "GET",
       }),
     googleCallback: (code: string) =>
       request<LoginResponse>(
-        `/auth/google/callback?code=${encodeURIComponent(code)}`,
+        API_ENDPOINTS.AUTH.GOOGLE_CALLBACK(code),
         {
           method: "POST",
         },
@@ -100,30 +101,30 @@ export const api = {
   },
   templates: {
     list: (token?: string | null) =>
-      request<any[]>("/templates", { method: "GET" }, token),
+      request<any[]>(API_ENDPOINTS.TEMPLATES.LIST, { method: "GET" }, token),
     get: (id: string, token?: string | null) =>
-      request<any>(`/templates/${id}`, { method: "GET" }, token),
+      request<any>(API_ENDPOINTS.TEMPLATES.GET(id), { method: "GET" }, token),
   },
   invitations: {
     list: (token?: string | null) =>
-      request<any[]>("/invitations", { method: "GET" }, token),
+      request<any[]>(API_ENDPOINTS.INVITATIONS.LIST, { method: "GET" }, token),
     get: (id: string, token?: string | null) =>
-      request<any>(`/invitations/${id}`, { method: "GET" }, token),
+      request<any>(API_ENDPOINTS.INVITATIONS.GET(id), { method: "GET" }, token),
     update: (
       id: string,
       payload: { groom_name: string; bride_name: string; story: string },
       token?: string | null,
     ) =>
       request<any>(
-        `/invitations/${id}`,
+        API_ENDPOINTS.INVITATIONS.UPDATE(id),
         { method: "PUT", body: JSON.stringify(payload) },
         token,
       ),
     publish: (id: string, token?: string | null) =>
-      request<any>(`/invitations/${id}/publish`, { method: "POST" }, token),
+      request<any>(API_ENDPOINTS.INVITATIONS.PUBLISH(id), { method: "POST" }, token),
     addGuest: (id: string, payload: { name: string }, token?: string | null) =>
       request<any>(
-        `/invitations/${id}/guests`,
+        API_ENDPOINTS.INVITATIONS.ADD_GUEST(id),
         { method: "POST", body: JSON.stringify(payload) },
         token,
       ),
@@ -131,16 +132,16 @@ export const api = {
   orders: {
     checkout: (payload: { template_id: string }, token?: string | null) =>
       request<any>(
-        "/orders/checkout",
+        API_ENDPOINTS.ORDERS.CHECKOUT,
         { method: "POST", body: JSON.stringify(payload) },
         token,
       ),
     list: (token?: string | null) =>
-      request<any[]>("/orders", { method: "GET" }, token),
+      request<any[]>(API_ENDPOINTS.ORDERS.LIST, { method: "GET" }, token),
   },
   public: {
     getInvitation: (invitationSlug: string, guestSlug?: string) =>
-      request<any>(`/p/${invitationSlug}${guestSlug ? `/${guestSlug}` : ""}`, {
+      request<any>(API_ENDPOINTS.PUBLIC.GET_INVITATION(invitationSlug, guestSlug), {
         method: "GET",
       }),
     submitRsvp: (
@@ -148,7 +149,7 @@ export const api = {
       guestSlug: string,
       status: "accepted" | "declined",
     ) =>
-      request<any>(`/p/${invitationSlug}/${guestSlug}/rsvp`, {
+      request<any>(API_ENDPOINTS.PUBLIC.SUBMIT_RSVP(invitationSlug, guestSlug), {
         method: "POST",
         body: JSON.stringify({ status }),
       }),
@@ -156,7 +157,7 @@ export const api = {
       invitationSlug: string,
       payload: { name: string; message: string },
     ) =>
-      request<any>(`/p/${invitationSlug}/message`, {
+      request<any>(API_ENDPOINTS.PUBLIC.SUBMIT_MESSAGE(invitationSlug), {
         method: "POST",
         body: JSON.stringify(payload),
       }),

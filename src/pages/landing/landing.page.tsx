@@ -5,10 +5,14 @@ import { LanguageSelector } from "../../shared/i18n/language-selector";
 import { useI18n } from "../../shared/i18n/i18n-context";
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "../../components/user-menu";
-import { selectIsAuthenticated, useAuthStore } from "../../shared/auth/auth-store";
+import {
+  selectIsAuthenticated,
+  useAuthStore,
+} from "../../shared/auth/auth-store";
 
 export function LandingPage() {
-  const { authOpen, openAuthModal, closeAuthModal, plans, highlights } = useLandingService();
+  const { authOpen, openAuthModal, closeAuthModal, steps, highlights } =
+    useLandingService();
   const { t } = useI18n();
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
@@ -24,24 +28,22 @@ export function LandingPage() {
               <p className="text-lg font-semibold text-slate-900">
                 Creariif Invitation
               </p>
-              <p className="text-xs text-slate-500">
-                {t('landing.tagline')}
-              </p>
+              <p className="text-xs text-slate-500">{t("landing.tagline")}</p>
             </div>
           </div>
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
             <a href="#about" className="transition hover:text-pink-600">
-              {t('nav.about')}
+              {t("nav.about")}
             </a>
             <a href="#demo" className="transition hover:text-pink-600">
-              {t('nav.demo')}
+              {t("nav.demo")}
             </a>
-            <a href="#pricing" className="transition hover:text-pink-600">
-              {t('nav.pricing')}
+            <a href="#steps" className="transition hover:text-pink-600">
+              {t("nav.steps")}
             </a>
             <a href="#contact" className="transition hover:text-pink-600">
-              {t('nav.contact')}
+              {t("nav.contact")}
             </a>
           </nav>
 
@@ -54,7 +56,7 @@ export function LandingPage() {
                 onClick={openAuthModal}
                 className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
               >
-                {t('auth.login')}
+                {t("auth.login")}
               </Button>
             )}
           </div>
@@ -67,28 +69,14 @@ export function LandingPage() {
           <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
             <div className="max-w-2xl">
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-pink-200 bg-white/80 px-3 py-1 text-sm font-medium text-pink-700 shadow-sm">
-                <Sparkles size={16} /> {t('landing.badge')}
+                <Sparkles size={16} /> {t("landing.badge")}
               </div>
               <h1 className="text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
-                {t('landing.title')}
+                {t("landing.title")}
               </h1>
               <p className="mt-6 text-lg leading-8 text-slate-600">
-                {t('landing.description')}
+                {t("landing.description")}
               </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button
-                  onClick={openAuthModal}
-                  className="h-auto rounded-full bg-pink-600 px-5 py-3 font-semibold text-white hover:bg-pink-700"
-                >
-                  {t('landing.startFree')} <ArrowRight size={16} />
-                </Button>
-                <a
-                  href="#demo"
-                  className="rounded-full border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-700 transition hover:border-pink-300 hover:text-pink-600"
-                >
-                  {t('landing.viewDemo')}
-                </a>
-              </div>
             </div>
 
             <div className="relative">
@@ -96,7 +84,7 @@ export function LandingPage() {
               <div className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-white p-4 shadow-[0_25px_80px_rgba(15,23,42,0.12)]">
                 <img
                   src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80"
-                  alt={t('landing.imageAlt')}
+                  alt={t("landing.imageAlt")}
                   className="h-[460px] w-full rounded-[1.5rem] object-cover"
                 />
               </div>
@@ -108,10 +96,10 @@ export function LandingPage() {
           <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-500">
-                {t('landing.why')}
+                {t("landing.why")}
               </p>
               <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-                {t('landing.whyTitle')}
+                {t("landing.whyTitle")}
               </h2>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
@@ -140,13 +128,13 @@ export function LandingPage() {
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-300">
-                  {t('landing.demoEyebrow')}
+                  {t("landing.demoEyebrow")}
                 </p>
                 <h2 className="mt-3 text-3xl font-semibold">
-                  {t('landing.demoTitle')}
+                  {t("landing.demoTitle")}
                 </h2>
                 <p className="mt-4 text-lg text-slate-300">
-                  {t('landing.demoDescription')}
+                  {t("landing.demoDescription")}
                 </p>
               </div>
               <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 backdrop-blur">
@@ -155,21 +143,21 @@ export function LandingPage() {
                     <ShieldCheck size={18} />
                   </div>
                   <div>
-                    <p className="font-semibold">{t('landing.livePreview')}</p>
+                    <p className="font-semibold">{t("landing.livePreview")}</p>
                     <p className="text-sm text-slate-300">
-                      {t('landing.livePreviewDescription')}
+                      {t("landing.livePreviewDescription")}
                     </p>
                   </div>
                 </div>
                 <div className="mt-6 space-y-3 text-sm text-slate-300">
                   <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-3">
-                    • {t('landing.demoFeature1')}
+                    • {t("landing.demoFeature1")}
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-3">
-                    • {t('landing.demoFeature2')}
+                    • {t("landing.demoFeature2")}
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-slate-800/70 p-3">
-                    • {t('landing.demoFeature3')}
+                    • {t("landing.demoFeature3")}
                   </div>
                 </div>
               </div>
@@ -177,50 +165,42 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="px-6 py-20 lg:px-8">
+        <section id="steps" className="px-6 py-20 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="text-center">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-500">
-                {t('nav.pricing')}
+                {t("nav.steps")}
               </p>
               <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-                {t('landing.pricingTitle')}
+                {t("landing.stepsTitle")}
               </h2>
             </div>
-            <div className="mt-10 grid gap-6 lg:grid-cols-3">
-              {plans.map((plan) => (
+            <div className="mt-16 grid gap-8 lg:grid-cols-3 relative">
+              <div className="hidden lg:block absolute top-12 left-[16%] right-[16%] h-[2px] bg-gradient-to-r from-pink-200 via-rose-200 to-pink-200 -z-10" />
+              {steps.map((step, index) => (
                 <div
-                  key={plan.name}
-                  className={`rounded-[2rem] border p-8 shadow-sm ${plan.highlight ? "border-pink-300 bg-gradient-to-br from-pink-50 to-rose-50" : "border-slate-200 bg-white"}`}
+                  key={step.title}
+                  className="relative flex flex-col items-center text-center"
                 >
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
-                    {plan.name}
-                  </p>
-                  <div className="mt-4 flex items-end gap-2">
-                    <span className="text-4xl font-semibold text-slate-900">
-                      {plan.price}
-                    </span>
-                    {plan.price !== t('plan.free') && (
-                      <span className="mb-1 text-sm text-slate-500">
-                        {t('landing.perMonth')}
-                      </span>
-                    )}
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full border-8 border-white bg-pink-100 text-2xl font-bold text-pink-600 shadow-md">
+                    {index + 1}
                   </div>
-                  <ul className="mt-6 space-y-3 text-sm text-slate-600">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-2">
-                        • {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    onClick={openAuthModal}
-                    className={`mt-8 h-auto rounded-full px-4 py-3 font-semibold ${plan.highlight ? "bg-pink-600 text-white hover:bg-pink-700" : "bg-slate-900 text-white hover:bg-slate-700"}`}
-                  >
-                    {t('landing.getStarted')}
-                  </Button>
+                  <h3 className="mt-8 text-xl font-semibold text-slate-900">
+                    {step.title}
+                  </h3>
+                  <p className="mt-4 text-slate-600 max-w-xs">
+                    {step.description}
+                  </p>
                 </div>
               ))}
+            </div>
+            <div className="mt-16 flex justify-center">
+              <Button
+                onClick={openAuthModal}
+                className="h-auto rounded-full bg-slate-900 px-8 py-4 font-semibold text-white hover:bg-slate-700"
+              >
+                {t("landing.getStarted")}
+              </Button>
             </div>
           </div>
         </section>
@@ -230,13 +210,13 @@ export function LandingPage() {
             <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-pink-500">
-                  {t('nav.contact')}
+                  {t("nav.contact")}
                 </p>
                 <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-                  {t('landing.contactTitle')}
+                  {t("landing.contactTitle")}
                 </h2>
                 <p className="mt-3 max-w-2xl text-slate-600">
-                  {t('landing.contactDescription')}
+                  {t("landing.contactDescription")}
                 </p>
               </div>
               <a

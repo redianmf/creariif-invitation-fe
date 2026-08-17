@@ -1,11 +1,9 @@
 import { useCallback, useState } from 'react';
 import { useI18n } from '../../shared/i18n/i18n-context';
 
-export interface LandingPlan {
-  name: string;
-  price: string;
-  features: string[];
-  highlight: boolean;
+export interface LandingStep {
+  title: string;
+  description: string;
 }
 
 export interface LandingHighlight {
@@ -25,24 +23,18 @@ export function useLandingService() {
     setAuthOpen(false);
   }, []);
 
-  const plans: LandingPlan[] = [
+  const steps: LandingStep[] = [
     {
-      name: t('plan.starter'),
-      price: t('plan.free'),
-      features: [t('plan.feature1'), t('plan.feature2'), t('plan.feature3')],
-      highlight: false,
+      title: t('step.register.title'),
+      description: t('step.register.description'),
     },
     {
-      name: t('plan.signature'),
-      price: 'Rp 199k',
-      features: [t('plan.feature4'), t('plan.feature5'), t('plan.feature6')],
-      highlight: true,
+      title: t('step.selectTemplate.title'),
+      description: t('step.selectTemplate.description'),
     },
     {
-      name: t('plan.luxury'),
-      price: 'Rp 499k',
-      features: [t('plan.feature7'), t('plan.feature8'), t('plan.feature9')],
-      highlight: false,
+      title: t('step.buy.title'),
+      description: t('step.buy.description'),
     },
   ];
 
@@ -65,7 +57,7 @@ export function useLandingService() {
     authOpen,
     openAuthModal,
     closeAuthModal,
-    plans,
+    steps,
     highlights,
   };
 }
